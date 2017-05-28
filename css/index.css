@@ -1,0 +1,68 @@
+
+.mymessage{
+	margin-top: 8%;
+	text-align:center;
+}
+
+.jianli{
+	color: #e96ba8;
+	text-decoration: none;
+}
+.myqq{
+	text-decoration: none;
+	color: #8D90E0;
+}
+.myemail{
+	text-decoration: none;
+	color: #1AD84C;
+}
+
+
+#links {
+    width: 100%;
+    height: 25%;
+    position: absolute;
+    bottom: 0px;
+}
+.csdn{
+	margin-left: 25%;
+    width: 25%;
+    height: 100%;
+    float: left;
+    display: block;
+
+    color:  #EA1010;
+    font-size: 50px;
+    font-weight: bold;
+    text-decoration: none;
+    text-align: center;
+}
+ .csdn:hover { 
+ 	background: #00acee;
+ }
+
+ .cnblog{
+    width: 25%;
+    height: 100%;
+    float: left;
+    display: block;
+
+    color:  #00acee;
+    font-size: 50px;
+    font-weight: bold;
+    text-decoration: none;
+    text-align: center;
+}
+ .cnblog:hover { 
+ 	background: #ea4c89;
+ }
+
+
+
+
+
+
+
+
+
+
