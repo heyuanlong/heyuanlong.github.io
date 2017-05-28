@@ -1,0 +1,347 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Cache-Control" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>MatchVS</title>
+<link href="../css/matchvs.css" type="text/css" rel="stylesheet" charset="utf-8" />
+<script src="../js/jquery-1.9.0.min.js"></script>
+<script src="../js/matchvs.js"></script>
+<script src="../js/matchvs_config.js"></script>
+<script src="../js/md5.js"></script>
+
+<script type="text/javascript">
+	room_obj = new Object();
+	room_obj.room_status_obj = null;
+	room_obj.room_id = 0;
+	room_obj.user_nums = 0;
+
+	search_str = ""
+	page_nums = 0;
+	page_contexts = 10;
+
+	function GetQueryString(name)
+	{
+	     var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+	     var r = window.location.search.substr(1).match(reg);
+	     if(r!=null)return  unescape(r[2]); return null;
+	}
+	function set_current_page (num) {
+		$(".current_page").text("当前页：" + (page_nums + 1));
+
+		if (room_obj.room_id == 0) {
+			$(".online_nums").text("当前房间ID：" + "所有房间");
+		}else{
+			$(".online_nums").text("当前房间ID：" + room_obj.room_id);
+		}
+		
+		$(".all_page").text("总页数：" +  Math.ceil(room_obj.user_nums / page_contexts ));
+
+	}
+	function pre_page () {
+		if (page_nums < 0) {
+			page_nums = 0;
+		}else if(page_nums == 0){
+			return;
+		}else{
+			page_nums = page_nums -1 ;
+		}
+		get_room_list();
+	}
+	function next_page () {
+		if (page_nums < 0) {
+			page_nums = 0;
+		}else if( page_nums+1 >= Math.ceil(room_obj.user_nums / page_contexts ) ){
+			return;
+		}else{
+			page_nums = page_nums + 1 ;
+		}
+		get_room_list();		
+	}
+	function get_room_status_obj () {
+		var str  = getRoomStatus()
+		var temp_room_status_obj = eval('(' + str + ')');
+		var obj_data  = temp_room_status_obj.data
+		if (room_obj.room_id == 0 ) {
+			room_obj.room_status_obj = temp_room_status_obj;
+			for (var i = 0; i < obj_data.length; i++) {				
+				room_obj.user_nums = room_obj.user_nums + obj_data[i].users.length;								
+			}
+		}else{
+			for (var i = 0; i < obj_data.length; i++) {
+				if (room_obj.room_id == obj_data[i].roomID) {
+					room_obj.room_status_obj = obj_data[i];
+					room_obj.user_nums = obj_data[i].users.length;					
+					break;
+				};
+			};
+		}		
+	}
+	function get_user_state(state) {
+		var USER_STATUS = {
+			USER_STATUS_LOGINING : 1,
+			USER_STATUS_ROOM_IN : 2,
+			USER_STATUS_PLAYING:3,
+			USER_STATUS_LOGOUT:4
+　　　　　}
+		if (state == USER_STATUS.USER_STATUS_LOGINING) {
+			return "登录中";
+		}else if(state == USER_STATUS.USER_STATUS_ROOM_IN) {
+			return "进房间";
+		}else if(state == USER_STATUS.USER_STATUS_PLAYING) {
+			return "游戏中";
+		}else if(state == USER_STATUS.USER_STATUS_LOGOUT) {
+			return "退出";
+		}else  {
+			return "";
+		}
+	}
+
+	function deal_user_info (data,out_obj_data) {
+		var user_info_array = data.data;
+		for (var i = 0; i < out_obj_data.length; i++) {
+			var nickname = "";
+			var userID = out_obj_data[i].userID;
+			var state = out_obj_data[i].state;
+			for (var j = 0; j < user_info_array.length; j++) {
+				if (out_obj_data[i].userID == user_info_array[j].userid) {
+					nickname = user_info_array[j].nickName;
+					break;
+				};
+			};
+			var tr = "<tr class=\"table_tr_small\">";
+			tr +="<td>" + (i+1) + "</td>"
+			tr +="<td>" + nickname + "</td>"
+			tr +="<td>" + userID + "</td>"
+/*			tr +="<td>" + "0" + "</td>"
+*/			tr +="<td>" + get_user_state(state) + "</td>"
+/*			tr +="<td>" + "time" + "</td>"*/
+/*			tr +="<td><a href=\"./userdetail.html?userid="+ userID  + "\">详情</a>" + "</td>"*/
+			tr +="</tr><tr><td class=\"table_dotted\" colspan=\"10\"></td></tr>"
+			$("table").append(tr);	
+		};
+	}
+
+	function print_data(out_obj_data) {
+		var url =  "";
+		var gameID = get_gameID()
+		var user_arr_id = new Array();
+		for (var i = 0; i < out_obj_data.length; i++) {
+			user_arr_id.push(out_obj_data[i].userID);
+		};
+		
+		var temp_user_arr_id = user_arr_id.slice(0);
+		var userIDList = temp_user_arr_id.join(',');
+		var sign_str = get_app_key() + "&"
+		sign_str +=  "gameID=" + gameID + "&"
+		sign_str +=  "userIDList="+temp_user_arr_id.sort().join(',') + "&"
+		sign_str +=  get_app_secret()
+		var sign = hex_md5(sign_str);
+		if (get_server_env() == 0) {
+			url="http://user.matchvs.com/wc6/getUserInfoX"
+		}else{
+			url="http://testuser.matchvs.com/wc6/getUserInfoX"
+		}
+		var test_url =  url + "?" + "gameID="+gameID+"&userIDList="+userIDList+"&sign="+sign
+		$.ajax({
+			url:url,
+			data:{
+				gameID:gameID,
+				userIDList:userIDList,
+				sign:sign
+			},
+			type:"POST",
+			dataType:"jsonp",
+			success:function(data){
+				deal_user_info(data,out_obj_data);
+			},
+			error:function(){
+				alert("异常！");
+			}
+		})		
+	}
+
+	function get_room_list() {	
+		if (page_nums < 0) {
+			page_nums = 0;
+		};	
+		var page_start = (page_nums * page_contexts) ;
+		var page_end =  ( (page_nums+1) * page_contexts) - 1;
+		$("table tr:gt(0)").remove();
+
+
+		if (room_obj.room_id == 0) {
+			var i = 0;
+			//var v = 0
+			var obj_data  = room_obj.room_status_obj.data
+			var out_obj_data = new Array();
+			for (var j = 0; j < obj_data.length; j++) {
+				if (i > page_end ) { break };
+				var obj_data_users =  obj_data[j].users;
+				for (var k = 0; k < obj_data_users.length; k++) {
+					if (i > page_end ) { break };
+					if (i >= page_start) {
+						var userID  = obj_data_users[k].userID
+						var state  = obj_data_users[k].state
+						if (search_str != null && search_str != "") {
+							if (search_str != userID) {
+								continue;
+							};
+						}
+
+						out_obj_data.push({userID:userID,state:state})
+
+/*						v = v + 1
+						var tr = "<tr class=\"table_tr_small\">";
+						tr +="<td>" + v + "</td>"
+						tr +="<td>" + "0" + "</td>"
+						tr +="<td>" + userID + "</td>"
+						tr +="<td>" + "0" + "</td>"
+						tr +="<td>" + get_user_state(state) + "</td>"
+						tr +="<td>" + "time" + "</td>"
+						tr +="<td><a href=\"./userdetail.html?userid="+ userID  + "\">详情</a>" + "</td>"
+						tr +="</tr><tr><td class=\"table_dotted\" colspan=\"10\"></td></tr>"
+						$("table").append(tr);		*/
+
+					};
+					i = i + 1;
+				};
+			};
+			print_data(out_obj_data);
+
+		}else{
+			var obj_data  = room_obj.room_status_obj.users
+			var out_obj_data = new Array();
+			//var j = 0
+			for (var i = 0; i < obj_data.length; i++) {
+				if (i > page_end ) { break };
+				if (i >= page_start) {
+					var userID  = obj_data[i].userID
+					var state  = obj_data[i].state
+					if (search_str != null  && search_str != "") {
+						if (search_str != userID) {
+							continue;
+						};
+					}
+
+					out_obj_data.push({userID:userID,state:state})
+
+/*					j = j + 1;
+					var tr = "<tr class=\"table_tr_small\">";
+					tr +="<td>" + j + "</td>"
+					tr +="<td>" + "0" + "</td>"
+					tr +="<td>" + userID + "</td>"
+					tr +="<td>" + "0" + "</td>"
+					tr +="<td>" + get_user_state(state) + "</td>"
+					tr +="<td>" + "time" + "</td>"
+					tr +="<td><a href=\"./userdetail.html?userid="+ userID  + "\">详情</a>" + "</td>"
+					tr +="</tr><tr><td class=\"table_dotted\" colspan=\"10\"></td></tr>"						
+					$("table").append(tr);*/
+				};			
+			};
+			print_data(out_obj_data);
+		}
+
+		set_current_page(page_nums)
+	}
+	function deal_data_timeout(){
+		if ( "undefined" == typeof(getRoomStatus)  ) {
+			setTimeout("deal_data_timeout()",1);
+			return;
+		};
+		get_room_status_obj();	
+		get_room_list();
+	}
+	function body_on_load() {
+		var temp_room_id = GetQueryString("room_id");
+		if (temp_room_id != null && temp_room_id.toString().length > 0 ) {
+			var p = parseInt(temp_room_id)
+			if (isNaN(p) == false) {
+				room_obj.room_id = p;
+			};
+		};
+		var temp_page_nums = GetQueryString("page_nums");
+		if (temp_page_nums != null && temp_page_nums.toString().length > 0 ) {
+			var p = parseInt(temp_page_nums)
+			if (isNaN(p) == false) {
+				page_nums = p;
+			};
+		};
+
+		load_js_file(2,"../../roomStatus.js");
+		deal_data_timeout();	
+	}
+
+	function find_user () {
+		var temp_search_str = $("input").val()
+		if (temp_search_str != null  && temp_search_str != "") {
+			search_str = temp_search_str;
+		}else{
+			search_str = "";
+		}
+		get_room_list();
+	}
+
+
+</script>
+
+
+</head>
+
+<body onload="body_on_load()">
+	<div class=game_manager_header>
+		<div class="logo">
+	         <a href=""><img src="../img/logo.png"></a>
+	    </div>
+	    
+		<div class="left_menu">
+	         <a href="../index.html">用户信息</a>　
+	         <a href="./room.html">房间信息</a>　
+	         <a  class="select_menu" href="./roomstatus.html">行为日志</a>　
+	    </div>
+
+	</div>
+
+	<div class="online_nums">
+		当前用户数：
+	</div>
+
+	<div   Onchange="find_user()" class="search">
+		<input  placeholder="ID" ></input>
+	</div>
+
+	<div class="table_div_small">
+		<table>
+			<tr class="table_th">
+				<th>序号</th>
+				<th>用户昵称</th>
+				<th>用户ID</th>
+<!-- 				<th>内容</th> -->
+				<th>状态</th>
+<!-- 				<th>时间</th> -->
+<!-- 				<th>详情</th> -->
+			</tr>
+
+		</table>
+	</div>
+
+	<div class="page_nav">	
+		<div class="all_page">
+			总页数：
+		</div>
+		
+		<button class="next_page" onClick="next_page()">下一页</button>
+		<button class="pre_page" onClick="pre_page()">上一页</button>	
+		<div class="current_page">
+			当前页：
+		</div>
+	</div>
+	<div class="bottom">
+		<a href="/portal/index.jsp">MatchVS开发平台</a>|<a href="/portal/Contact.jsp" target="_blank">联系我们</a><br/>
+		Copyright @ 2014-2015 MatchVS. ALL Rights Reserved 粤ICP备 15050566-1号
+	</div>
+
+</body>
+</html>

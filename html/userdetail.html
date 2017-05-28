@@ -1,0 +1,271 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Cache-Control" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>MatchVS</title>
+<link href="../css/matchvs.css" type="text/css" rel="stylesheet" charset="utf-8" />
+<script src="../js/jquery-1.9.0.min.js"></script>
+<script src="../js/matchvs.js"></script>
+<script src="../js/matchvs_config.js"></script>
+<script src="../js/md5.js"></script>
+
+<script type="text/javascript">
+
+	function GetQueryString(name)
+	{
+	     var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+	     var r = window.location.search.substr(1).match(reg);
+	     if(r!=null)return  unescape(r[2]); return null;
+	}
+
+	function get_time (userid) {
+		var url =  "";
+		var gameID = get_gameID()
+		var userIDList = userid;
+
+		var sign_str = get_app_key() + "&"
+		sign_str +=  "gameID=" + gameID + "&"
+		sign_str +=  "userIDList="+userIDList + "&"
+		sign_str +=  get_app_secret()
+
+		var sign = hex_md5(sign_str);
+		if (get_server_env() == 0) {
+			url="http://user.matchvs.com/wc6/getUserTime"
+		}else{
+			url="http://testuser.matchvs.com/wc6/getUserTime"
+		}
+		var test_url =  url + "?" + "gameID="+gameID+"&userIDList="+userIDList+"&sign="+sign
+		$.ajax({
+			url:url,
+			data:{
+				gameID:gameID,
+				userIDList:userIDList,
+				sign:sign
+			},
+			type:"POST",
+			dataType:"jsonp",
+			success:function(obj){
+				if (obj.status == 0) {
+					var obj_data  = obj.data
+					for (var i = 0; i < obj_data.length; i++) {
+						$("#create_time").val(obj_data[0].createTime);
+						$("#last_time").val(obj_data[0].lastLoginTime);
+					};
+				};
+			},
+			error:function(){
+				alert("异常！");
+			}
+		})		
+	}
+	function get_score (userid) {
+				var url =  "";
+		var gameID = get_gameID()
+		var userIDList = userid;
+
+		var sign_str = get_app_key() + "&"
+		sign_str +=  "gameID=" + gameID + "&"
+		sign_str +=  "userIDList="+userIDList + "&"
+		sign_str +=  get_app_secret()
+
+		var sign = hex_md5(sign_str);
+		if (get_server_env() == 0) {
+			url="http://open.matchvs.com/wc6/getUserBattleInfo"
+		}else{
+			url="http://testopen.matchvs.com/wc6/getUserBattleInfo"
+		}
+		var test_url =  url + "?" + "gameID="+gameID+"&userIDList="+userIDList+"&sign="+sign
+		$.ajax({
+			url:url,
+			data:{
+				gameID:gameID,
+				userIDList:userIDList,
+				sign:sign
+			},
+			type:"POST",
+			dataType:"jsonp",
+			success:function(obj){
+				if (obj.status == 0) {
+					var obj_data  = obj.data
+					if(obj_data.length > 0) {
+						$("#scoreA").val(obj_data[0].scoreA);
+						$("#scoreB").val(obj_data[0].scoreB);
+						$("#scoreC").val(obj_data[0].scoreC);
+						$("#extend_0").val(obj_data[0].extend_0);
+						$("#extend_1").val(obj_data[0].extend_1);
+						$("#extend_2").val(obj_data[0].extend_2);
+						$("#extend_3").val(obj_data[0].extend_3);
+						$("#extend_4").val(obj_data[0].extend_4);
+						$("#extend_5").val(obj_data[0].extend_5);
+						$("#extend_6").val(obj_data[0].extend_6);
+						$("#extend_7").val(obj_data[0].extend_7);
+						$("#extend_8").val(obj_data[0].extend_8);
+						$("#extend_9").val(obj_data[0].extend_9);						
+					}else{
+						$("#scoreA").val(0);
+						$("#scoreB").val(0);
+						$("#scoreC").val(0);
+						$("#extend_0").val(0);
+						$("#extend_1").val(0);
+						$("#extend_2").val(0);
+						$("#extend_3").val(0);
+						$("#extend_4").val(0);
+						$("#extend_5").val(0);
+						$("#extend_6").val(0);
+						$("#extend_7").val(0);
+						$("#extend_8").val(0);
+						$("#extend_9").val(0);
+					}
+				};
+			},
+			error:function(){
+				alert("异常！");
+			}
+		})	
+	}
+
+	function get_packet (userid) {
+		var url =  "";
+		var gameID = get_gameID()
+		var userIDList = userid;
+
+		var sign_str = get_app_key() + "&"
+		sign_str +=  "gameID=" + gameID + "&"
+		sign_str +=  "userIDList="+userIDList + "&"
+		sign_str +=  get_app_secret()
+
+		var sign = hex_md5(sign_str);
+		if (get_server_env() == 0) {
+			url="http://pay.matchvs.com/wc6/getUserPackets"
+		}else{
+			url="http://testpay.matchvs.com/wc6/getUserPackets"
+		}
+		var test_url =  url + "?" + "gameID="+gameID+"&userIDList="+userIDList+"&sign="+sign
+		$.ajax({
+			url:url,
+			data:{
+				gameID:gameID,
+				userIDList:userIDList,
+				sign:sign
+			},
+			type:"POST",
+			dataType:"jsonp",
+			success:function(obj){				
+				if (obj.status == 0) {
+					var obj_data  = obj.data
+					for (var j in obj_data) {
+						var obj_data_user = obj_data[j]
+						for (var i = 0; i < obj_data_user.length; i++) {
+							var div = "<div class=\"userdetail_packet_content\">"	
+							div += obj_data_user[i].productID + "：<input value='"+ (obj_data_user[i].count + obj_data_user[i].countDecimal * 0.01)+"'>"
+							div += "</input></div>" 
+							$(".userdetail_packet").append(div);
+						};
+					};		
+				};
+			},
+			error:function(){
+				alert("异常！");
+			}
+		})
+	}
+
+	function get_all_msg (userid) {
+		get_time(userid);
+		get_score(userid);
+		get_packet(userid);
+	}
+
+	function body_on_load () {
+		var temp_userid = GetQueryString("userid");
+		if (temp_userid != null && temp_userid.toString().length > 0) {
+			get_all_msg(temp_userid)
+		};
+	}
+
+</script>
+</head>
+<body  onload = "body_on_load()">
+	<div class=game_manager_header>
+		<div class="logo">
+	         <a href=""><img src="../img/logo.png"></a>
+	    </div>
+	    
+		<div class="left_menu">
+	         <a class="select_menu"  href="../index.html">用户信息</a>　
+	         <a href="./room.html">房间信息</a>　
+	         <a href="./roomstatus.html">行为日志</a>　
+	    </div>
+
+	</div>
+
+	<div class="userdetail_nav">
+		用户详情
+	</div>
+
+	<div class="userdetail_time">
+		<div class="userdetail_time_content">
+			用户创建时间：<input id="create_time"></input><br/>
+		</div>
+		<div class="userdetail_time_content">
+			最后在线时间：<input id="last_time" ></input>
+		</div>
+	</div>
+	<div class="userdetail_score">
+		<div class="userdetail_score_content">
+			scoreA：<input id="scoreA"></input><br/>
+		</div>
+		<div class="userdetail_score_content">
+			scoreB：<input id="scoreB"></input>
+		</div>
+		<div class="userdetail_score_content">
+			scoreC：<input id="scoreC"></input>
+		</div>
+		<div class="userdetail_score_content">
+			extend_0：<input id="extend_0"></input>
+		</div>
+		<div class="userdetail_score_content">
+			extend_1：<input id="extend_1"></input>
+		</div>
+		<div class="userdetail_score_content">
+			extend_2：<input id="extend_2"></input>
+		</div>
+		<div class="userdetail_score_content">
+			extend_3：<input id="extend_3"></input>
+		</div>
+		<div class="userdetail_score_content">
+			extend_4：<input id="extend_4"></input>
+		</div>
+		<div class="userdetail_score_content">
+			extend_5：<input id="extend_5"></input>
+		</div>
+		<div class="userdetail_score_content">
+			extend_6：<input id="extend_6"></input>
+		</div>
+		<div class="userdetail_score_content">
+			extend_7：<input id="extend_7"></input>
+		</div>
+		<div class="userdetail_score_content">
+			extend_8：<input id="extend_8"></input>
+		</div>
+		<div class="userdetail_score_content">
+			extend_9：<input id="extend_9"></input>
+		</div>		
+	</div>
+	<div class="userdetail_packet">
+		
+	</div>
+
+	<div class="bottom">
+		<a href="/portal/index.jsp">MatchVS开发平台</a>|<a href="/portal/Contact.jsp" target="_blank">联系我们</a><br/>
+		Copyright @ 2014-2015 MatchVS. ALL Rights Reserved 粤ICP备 15050566-1号
+	</div>
+
+
+
+
+</body>
+</html>

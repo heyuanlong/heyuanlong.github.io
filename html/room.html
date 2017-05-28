@@ -1,0 +1,218 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Cache-Control" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>MatchVS</title>
+<link href="../css/matchvs.css" type="text/css" rel="stylesheet" charset="utf-8" />
+<script src="../js/jquery-1.9.0.min.js"></script>
+<script src="../js/matchvs.js"></script>
+<script src="../js/matchvs_config.js"></script>
+<script src="../js/md5.js"></script>
+
+<script type="text/javascript">
+	room_status_obj = null;
+	search_room_status_obj = null;
+	room_nums = 0;
+	page_nums = 0;
+	page_contexts = 10;
+
+	function GetQueryString(name)
+	{
+	     var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+	     var r = window.location.search.substr(1).match(reg);
+	     if(r!=null)return  unescape(r[2]); return null;
+	}
+	function set_current_page (num) {
+		$(".current_page").text("当前页：" + (page_nums + 1));
+
+	}
+	function pre_page () {
+		if (page_nums < 0) {
+			page_nums = 0;
+		}else if(page_nums == 0){
+			return;
+		}else{
+			page_nums = page_nums -1 ;
+		}
+		get_room_list();
+	}
+	function next_page () {
+		if (page_nums < 0) {
+			page_nums = 0;
+		}else if( page_nums+1 >= Math.ceil(room_nums / page_contexts )){
+			return;
+		}else{
+			page_nums = page_nums + 1 ;
+		}
+		get_room_list();		
+	}
+	function get_room_status_obj () {
+		var str  = getRoomStatus()
+		room_status_obj = eval('(' + str + ')');
+		var obj_data  = room_status_obj.data		
+	}
+	function get_room_nums() {	
+		var obj_data  = null;
+		if (search_room_status_obj == null) {
+			obj_data = room_status_obj.data
+		}else{
+			obj_data = search_room_status_obj.data
+		}
+
+		room_nums = obj_data.length;
+		$(".online_nums").text("房间数：" + room_nums);
+		$(".all_page").text("总页数：" +  Math.ceil(room_nums / page_contexts ));
+
+	}
+	function get_room_state (state) {
+		if (state == 1) {
+			return "准备中";
+		}else{
+			return "游戏中";
+		}
+	}
+	function get_room_list() {	
+		if (page_nums < 0) {
+			page_nums = 0;
+		};		
+		var page_start = (page_nums * page_contexts) ;
+		var page_end =  ( (page_nums+1) * page_contexts) - 1;
+		$("table tr:gt(0)").remove();
+
+		var obj_data  = null;
+		if (search_room_status_obj == null) {
+			obj_data = room_status_obj.data
+		}else{
+			obj_data = search_room_status_obj.data
+		}
+		
+		var j = 0
+		for (var i = 0; i < obj_data.length; i++) {
+			if (i > page_end ) { break };
+			if (i >= page_start) {
+				var roomName = obj_data[i].roomName
+				var roomID  = obj_data[i].roomID
+				var state  = obj_data[i].state
+				var userCount  = obj_data[i].userCount
+
+				j = j + 1;
+				var tr = "<tr class=\"table_tr_small\">";
+				tr +="<td>" + j + "</td>"
+				tr +="<td>" + roomName + "</td>"
+				tr +="<td>" + roomID + "</td>"
+				tr +="<td>" + userCount + "</td>"
+				tr +="<td>" + get_room_state(state) + "</td>"
+				tr +="<td><a href=\"./roomstatus.html?room_id="+ roomID  + "\">详情</a>" + "</td>"
+				tr +="</tr><tr><td class=\"table_dotted\" colspan=\"10\"></td></tr>"
+				$("table").append(tr);
+			};			
+		};
+		set_current_page(page_nums)
+	}
+	function deal_data_timeout(){
+		//if ("undefined" == typeof(getRoom) || "undefined" == typeof(getRoomStatus)  ) {
+		if ( "undefined" == typeof(getRoomStatus)  ) {
+			setTimeout("deal_data_timeout()",1);
+			return;
+		};
+		get_room_status_obj();
+		get_room_nums();	
+		get_room_list();
+	}
+	function body_on_load() {
+		var temp_page_nums = GetQueryString("page_nums");
+		if (temp_page_nums != null && temp_page_nums.toString().length > 0 ) {
+			var p = parseInt(temp_page_nums)
+			if (isNaN(p) == false) {
+				page_nums = p;
+			};
+		};
+		//var date_str = getDateYYYYmmdd()
+		//var js_str = '../../room' + date_str + '.js';
+		//load_js_file(1,js_str);
+		load_js_file(2,"../../roomStatus.js");
+
+		deal_data_timeout();	
+	}
+
+	function find_user () {
+		var search_str = $("input").val();
+		search_room_status_obj = null;
+		if (search_str != null  && search_str != "") {
+			search_room_status_obj = new Object();
+			search_room_status_obj.data = new Array();
+			var obj_data  = room_status_obj.data
+
+			for (var i = 0; i < obj_data.length; i++) {
+				var roomName = obj_data[i].roomName
+				var roomID  = obj_data[i].roomID.toString()
+				if (roomName.indexOf(search_str) >=0 || roomID.indexOf(search_str) >=0 ) {
+					search_room_status_obj.data.push(obj_data[i]);
+				};
+			};	
+			page_nums = 0;
+			get_room_nums();
+			get_room_list();	
+		};
+	}
+
+</script>
+
+</head>
+
+<body  onload = "body_on_load()">
+	<div class=game_manager_header>
+		<div class="logo">
+	         <a href=""><img src="../img/logo.png"></a>
+	    </div>
+	    
+		<div class="left_menu">
+	         <a href="../index.html">用户信息</a>　
+	         <a  class="select_menu" href="./room.html">房间信息</a>　
+	         <a href="./roomstatus.html">行为日志</a>　
+	    </div>
+
+	</div>
+
+	<div class="online_nums">
+		房间数：
+	</div>
+
+	<div class="search">
+		<input   Onchange="find_user()" placeholder="搜索房间昵称/ID" ></input>
+	</div>
+
+	<div class="table_div_small">
+		<table>
+			<tr class="table_th">
+				<th>序号</th>
+				<th>房间名称</th>
+				<th>房间ID</th>
+				<th>房间人数</th>
+				<th>状态</th>
+				<th>详情</th>
+			</tr>
+		</table>
+	</div>
+	<div class="page_nav">	
+		<div class="all_page">
+			总页数：
+		</div>
+
+		<button class="next_page" onClick="next_page()">下一页</button>
+		<button class="pre_page" onClick="pre_page()">上一页</button>	
+		<div class="current_page">
+			当前页：
+		</div>
+	</div>
+	<div class="bottom">
+		<a href="/portal/index.jsp">MatchVS开发平台</a>|<a href="/portal/Contact.jsp" target="_blank">联系我们</a><br/>
+		Copyright @ 2014-2015 MatchVS. ALL Rights Reserved 粤ICP备 15050566-1号
+	</div>
+
+
+</body>
+</html>

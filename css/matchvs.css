@@ -1,0 +1,232 @@
+/*----------------base--------------start  */
+
+body{
+	margin: 0;
+	background-color: #f0f0f0;
+}
+/*----------------base--------------end  */
+
+
+
+/*----------------导航条--------------start  */
+.game_manager_header{
+	width: 100%;
+    height: 60px;
+    margin: 0;
+    background-color: #fff;
+    border-color: #444;
+}
+
+.logo{
+	float:left;
+}
+
+.left_menu{
+	height: 0;
+}
+.left_menu a{
+	width: 100px;
+    height: 60px;
+    float:left;
+    margin-left: 5px;
+    
+    line-height: 60px;
+    text-align:center;
+    text-decoration: none;
+    
+    color: #333;
+    font-size: 16px;
+    font-family: 微软雅黑;
+    font-style: normal;
+    font-variant: normal;
+    font-weight: normal;
+    font-stretch: normal;
+}
+
+.left_menu a:hover {
+	border-bottom: 4px solid #26b1b6;
+	-webkit-transition: all .3s ease;
+}
+
+.select_menu{
+    border-bottom: 4px solid #26b1b6;
+    -webkit-transition: all .3s ease;
+}
+
+/*----------------导航条--------------end  */
+
+
+/*---------------当前用户数-------------- */
+.online_nums{
+	width: 1200px;
+    height: 60px;
+    margin-top:10px;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: #fff;
+    border-color: #444;
+
+    text-align: center;
+    line-height: 60px;
+    font-size: 18px;
+    border-bottom: 1px solid #111;
+}
+
+/*---------------search-------------- */
+.search{
+    width: 1200px;
+    height: 60px;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: #fff;
+    border-color: #444;
+
+    text-align: right;
+}
+.search input{
+    margin-top: 14px;
+    border: 8px solid #EDEDEF;
+    margin-right: 20px;
+}
+
+/*---------------用户列表------------- */
+.table_div{
+    width: 1200px;
+    height: 1350px;
+    margin-left: auto;
+    margin-right: auto;
+
+    background-color: #fff;
+}
+.table_div_small{
+    width: 1200px;
+    height: 936px;
+    margin-left: auto;
+    margin-right: auto;
+
+    background-color: #fff;
+}
+.table_div table,.table_div_small table{
+    width: 1120px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
+.table_th{
+    height: 50px;
+    background-color: #f0f0f0;
+}
+
+.table_tr{
+    height: 120px;
+    border:  8px dotted #EDEDEF;
+}
+
+.table_tr_small{
+    height: 80px;
+    border:  8px dotted #EDEDEF;
+}
+
+.table_dotted{
+    width: 1120px;
+    height: 1px ;
+    border-bottom:  1px dotted #000;
+}
+
+/* ------------------------------底部-------- */
+.bottom{
+    width: 100%;
+    height: 60px;
+    padding-top: 20px;
+    background-color: #494a4f;
+
+    text-align: center;
+    font-size: 24;
+    color: #fff;
+
+}
+.bottom a{
+    color: #fff;
+    text-decoration: none;
+}
+
+/* ------------------------------page-------- */
+.page_nav{
+    width: 1200px;
+    height: 40px;
+    margin-left: auto;
+    margin-right: auto;
+
+}
+.all_page{
+    float: left;
+}
+.current_page,.pre_page,.next_page{
+    float: right;
+    margin-left: 20px;
+}
+
+
+
+
+
+/* --------------用户详情-------------------------------------------start------------ */
+.userdetail_nav{
+    width: 1200px;
+    height: 60px;
+    margin-top:10px;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: #A2A0A0;
+    border-color: #444;
+
+    text-align: left;
+    line-height: 60px;
+    font-size: 30px;
+}
+.userdetail_time{
+    width: 1200px;
+    height: 120px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 15px;
+    border: 1px solid #BBBBBB;
+
+    background-color: #fff;
+
+}
+.userdetail_time_content,.userdetail_score_content,.userdetail_packet_content{
+    width: 50%;
+    float: right;
+    margin-right: 42%;
+    margin-top: 2%;
+    font-size: 20px;
+
+    text-align: right;
+}
+
+.userdetail_score{
+    width: 1200px;
+    height: 650px;
+    margin-left: auto;
+    margin-right: auto;   
+    border: 1px solid #BBBBBB;
+    margin-bottom: 15px;
+
+    background-color: #fff;
+}
+.userdetail_packet{
+    width: 1200px;
+    height: 350px;
+    margin-left: auto;
+    margin-right: auto;   
+    border: 1px solid #BBBBBB;
+    margin-bottom: 15px;
+
+    background-color: #fff;
+}
+
+
+
+/* --------------用户详情-------------------------------end----------- */
