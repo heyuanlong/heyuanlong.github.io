@@ -1,0 +1,49 @@
+body, html {
+    padding: 0px;
+    margin: 0px;
+}
+
+
+.itemcontent{
+	margin:0 auto;
+	width:75%
+}
+
+.item{
+	width:70%;
+	height: 30px;
+	margin-left:15%;
+	margin-bottom: 20px;
+}
+.jishu{
+	width: 20%;
+    float: left;
+    line-height: 30px;
+}
+.progress{
+	width: 70%;
+	height: 30px;
+	float: left;
+	background: #f2f2f2;
+}
+.progress > span {
+	text-align: right;
+	float: left;
+	height:100%;
+	line-height: 30px;
+}
+.green {
+    background: #49C085;
+}
+.orange {
+    background: #f2b63c;
+}
+.red {
+    background: rgb(245, 138, 135);
+}
+.blue {
+    background: #6F92FF;
+}
+.darkblue {
+    background: #7782D1;
+}
